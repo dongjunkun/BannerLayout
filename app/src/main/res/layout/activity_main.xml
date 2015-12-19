@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.yyydjk.sliderlayoutdemo.MainActivity">
+
+    <com.yyydjk.sliderlayoutdemo.BannerLayout
+        android:id="@+id/banner"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:autoPlayDuration="5000"
+        app:indicatorMargin="10dp"
+        app:indicatorPosition="rightBottom"
+        app:indicatorShape="rect"
+        app:indicatorSpace="3dp"
+        app:scrollDuration="1100"
+        app:selectedIndicatorColor="?attr/colorPrimary"
+        app:selectedIndicatorHeight="6dp"
+        app:selectedIndicatorWidth="6dp"
+        app:unSelectedIndicatorColor="#99ffffff"
+        app:unSelectedIndicatorHeight="6dp"
+        app:unSelectedIndicatorWidth="6dp" />
+</RelativeLayout>
