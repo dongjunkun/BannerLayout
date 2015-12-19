@@ -1,10 +1,10 @@
 一款简洁实用的android广告栏，参考了[AndroidImageSlider](https://github.com/daimajia/AndroidImageSlider)和[BGABanner-Android](https://github.com/bingoogolapple/BGABanner-Android)结合自己的理解而成
 
 ###预览
+<img src="https://raw.githubusercontent.com/dongjunkun/BannerLayoutDemo/master/art/bannerLayoutDemo1.gif"/>
 
 ###使用
 **xml**
-
 ```
 <com.yyydjk.sliderlayoutdemo.BannerLayout
         android:id="@+id/banner"
@@ -24,8 +24,7 @@
         app:unSelectedIndicatorWidth="6dp" />
 ```
 
-**代码中**
-
+**代码中使用**
 ```
 bannerLayout.setViewUrls(urls);
 ```
