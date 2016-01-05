@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Created by dongjunkun on 2015/8/9.
  */
-public class BannerLayout extends RelativeLayout implements android.os.Handler.Callback {
+public class BannerLayout extends RelativeLayout {
 
     private ViewPager pager;
     //指示器容器
@@ -39,14 +39,12 @@ public class BannerLayout extends RelativeLayout implements android.os.Handler.C
     private Drawable selectedDrawable;
 
     private int WHAT_AUTO_PLAY = 1000;
-    private Handler handler;
 
     private boolean isAutoPlay = true;
-    private boolean isLooper = true;
 
-    private int itemCount = 0;
+    private int itemCount;
 
-    private int selectedIndicatorColor  = 0xffff0000;
+    private int selectedIndicatorColor = 0xffff0000;
     private int unSelectedIndicatorColor = 0x88888888;
 
     private Shape indicatorShape = Shape.oval;
@@ -76,6 +74,17 @@ public class BannerLayout extends RelativeLayout implements android.os.Handler.C
     }
 
     private OnBannerItemClickListener onBannerItemClickListener;
+
+    private Handler handler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            if (msg.what == WHAT_AUTO_PLAY) {
+                pager.setCurrentItem(pager.getCurrentItem() + 1, true);
+                handler.sendEmptyMessageDelayed(WHAT_AUTO_PLAY, autoPlayDuration);
+            }
+            return false;
+        }
+    });
 
     public BannerLayout(Context context) {
         super(context);
@@ -122,8 +131,6 @@ public class BannerLayout extends RelativeLayout implements android.os.Handler.C
         scrollDuration = array.getInt(R.styleable.BannerLayoutStyle_scrollDuration, scrollDuration);
         isAutoPlay = array.getBoolean(R.styleable.BannerLayoutStyle_isAutoPlay, isAutoPlay);
         array.recycle();
-
-        handler = new Handler(this);
 
         //绘制未选中状态图形
         LayerDrawable unSelectedLayerDrawable;
@@ -315,16 +322,6 @@ public class BannerLayout extends RelativeLayout implements android.os.Handler.C
         }
     }
 
-
-    @Override
-    public boolean handleMessage(Message msg) {
-        if (msg.what == WHAT_AUTO_PLAY) {
-            pager.setCurrentItem(pager.getCurrentItem() + 1, true);
-            handler.sendEmptyMessageDelayed(WHAT_AUTO_PLAY, autoPlayDuration);
-        }
-        return false;
-    }
-
     /**
      * 开始自动轮播
      */
@@ -332,6 +329,12 @@ public class BannerLayout extends RelativeLayout implements android.os.Handler.C
         if (isAutoPlay) {
             handler.sendEmptyMessageDelayed(WHAT_AUTO_PLAY, autoPlayDuration);
         }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        stopAutoPlay();
     }
 
     /**
