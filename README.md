@@ -24,7 +24,7 @@
         app:unSelectedIndicatorWidth="6dp" />
 ```
 
-**代码**
+**代码中使用**
 ```
 bannerLayout.setViewUrls(urls);
 ```
