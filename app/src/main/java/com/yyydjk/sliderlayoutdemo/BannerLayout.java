@@ -133,14 +133,9 @@ public class BannerLayout extends RelativeLayout {
         array.recycle();
 
         //绘制未选中状态图形
-        LayerDrawable unSelectedLayerDrawable;
-        LayerDrawable selectedLayerDrawable;
-        GradientDrawable unSelectedGradientDrawable;
-        unSelectedGradientDrawable = new GradientDrawable();
-
+        GradientDrawable unSelectedGradientDrawable = new GradientDrawable();
         //绘制选中状态图形
-        GradientDrawable selectedGradientDrawable;
-        selectedGradientDrawable = new GradientDrawable();
+        GradientDrawable selectedGradientDrawable = new GradientDrawable();
         switch (indicatorShape) {
             case rect:
                 unSelectedGradientDrawable.setShape(GradientDrawable.RECTANGLE);
@@ -153,14 +148,11 @@ public class BannerLayout extends RelativeLayout {
         }
         unSelectedGradientDrawable.setColor(unSelectedIndicatorColor);
         unSelectedGradientDrawable.setSize(unSelectedIndicatorWidth, unSelectedIndicatorHeight);
-        unSelectedLayerDrawable = new LayerDrawable(new Drawable[]{unSelectedGradientDrawable});
-        unSelectedDrawable = unSelectedLayerDrawable;
-
         selectedGradientDrawable.setColor(selectedIndicatorColor);
         selectedGradientDrawable.setSize(selectedIndicatorWidth, selectedIndicatorHeight);
-        selectedLayerDrawable = new LayerDrawable(new Drawable[]{selectedGradientDrawable});
-        selectedDrawable = selectedLayerDrawable;
 
+        unSelectedDrawable = new LayerDrawable(new Drawable[]{unSelectedGradientDrawable});
+        selectedDrawable = new LayerDrawable(new Drawable[]{selectedGradientDrawable});
     }
 
     //添加本地图片路径
