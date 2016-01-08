@@ -331,6 +331,18 @@ public class BannerLayout extends RelativeLayout {
         stopAutoPlay();
     }
 
+    @Override
+    protected void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
+
+        if (visibility == VISIBLE) {
+            stopAutoPlay(); // 避免重复消息
+            startAutoPlay();
+        } else {
+            stopAutoPlay();
+        }
+    }
+
     /**
      * 停止自动轮播
      */
