@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -252,6 +253,7 @@ public class BannerLayout extends RelativeLayout {
         setSliderTransformDuration(scrollDuration);
         //初始化indicatorContainer
         indicatorContainer = new LinearLayout(getContext());
+        indicatorContainer.setGravity(Gravity.CENTER_VERTICAL);
         RelativeLayout.LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
         switch (indicatorPosition) {
@@ -336,6 +338,18 @@ public class BannerLayout extends RelativeLayout {
         super.onDetachedFromWindow();
         stopAutoPlay();
     }
+
+    @Override
+    protected void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
+        if (visibility == VISIBLE) {
+            stopAutoPlay(); // 避免重复消息
+            startAutoPlay();
+        } else {
+            stopAutoPlay();
+        }
+    }
+
 
     /**
      * 停止自动轮播
