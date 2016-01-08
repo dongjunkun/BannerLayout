@@ -26,7 +26,19 @@
 
 **代码中使用**
 ```
+//网络地址
 bannerLayout.setViewUrls(urls);
+
+//本地资源
+bannerLayout.setViewRes(viewRes);
+
+//添加点击监听
+bannerLayout.setOnBannerItemClickListener(new BannerLayout.OnBannerItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                Toast.makeText(MainActivity.this, String.valueOf(position), Toast.LENGTH_SHORT).show();
+            }
+        });
 ```
 
 ###关于我
