@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -133,14 +134,9 @@ public class BannerLayout extends RelativeLayout {
         array.recycle();
 
         //绘制未选中状态图形
-        LayerDrawable unSelectedLayerDrawable;
-        LayerDrawable selectedLayerDrawable;
-        GradientDrawable unSelectedGradientDrawable;
-        unSelectedGradientDrawable = new GradientDrawable();
-
+        GradientDrawable unSelectedGradientDrawable = new GradientDrawable();
         //绘制选中状态图形
-        GradientDrawable selectedGradientDrawable;
-        selectedGradientDrawable = new GradientDrawable();
+        GradientDrawable selectedGradientDrawable = new GradientDrawable();
         switch (indicatorShape) {
             case rect:
                 unSelectedGradientDrawable.setShape(GradientDrawable.RECTANGLE);
@@ -153,14 +149,11 @@ public class BannerLayout extends RelativeLayout {
         }
         unSelectedGradientDrawable.setColor(unSelectedIndicatorColor);
         unSelectedGradientDrawable.setSize(unSelectedIndicatorWidth, unSelectedIndicatorHeight);
-        unSelectedLayerDrawable = new LayerDrawable(new Drawable[]{unSelectedGradientDrawable});
-        unSelectedDrawable = unSelectedLayerDrawable;
-
         selectedGradientDrawable.setColor(selectedIndicatorColor);
         selectedGradientDrawable.setSize(selectedIndicatorWidth, selectedIndicatorHeight);
-        selectedLayerDrawable = new LayerDrawable(new Drawable[]{selectedGradientDrawable});
-        selectedDrawable = selectedLayerDrawable;
 
+        unSelectedDrawable = new LayerDrawable(new Drawable[]{unSelectedGradientDrawable});
+        selectedDrawable = new LayerDrawable(new Drawable[]{selectedGradientDrawable});
     }
 
     //添加本地图片路径
@@ -252,6 +245,7 @@ public class BannerLayout extends RelativeLayout {
         setSliderTransformDuration(scrollDuration);
         //初始化indicatorContainer
         indicatorContainer = new LinearLayout(getContext());
+        indicatorContainer.setGravity(Gravity.CENTER_VERTICAL);
         RelativeLayout.LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
         switch (indicatorPosition) {
@@ -335,6 +329,18 @@ public class BannerLayout extends RelativeLayout {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         stopAutoPlay();
+    }
+
+    @Override
+    protected void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
+
+        if (visibility == VISIBLE) {
+            stopAutoPlay(); // 避免重复消息
+            startAutoPlay();
+        } else {
+            stopAutoPlay();
+        }
     }
 
     /**
