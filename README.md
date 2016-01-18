@@ -3,6 +3,8 @@
 ###预览
 <img src="https://raw.githubusercontent.com/dongjunkun/BannerLayoutDemo/master/art/bannerLayoutDemo1.gif"/>
 
+<a href="https://raw.githubusercontent.com/dongjunkun/BannerLayout/master/bannerlayoutsimple.apk">DownLoad APK</a>
+
 ###使用
 **xml**
 ```
