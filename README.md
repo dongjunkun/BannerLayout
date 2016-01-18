@@ -6,7 +6,7 @@
 ###使用
 **xml**
 ```
-<com.yyydjk.sliderlayoutdemo.BannerLayout
+<com.yyydjk.library.BannerLayout
         android:id="@+id/banner"
         android:layout_width="match_parent"
         android:layout_height="200dp"

@@ -1,4 +1,4 @@
-package com.yyydjk.sliderlayoutdemo;
+package com.yyydjk.library;
 
 import android.content.Context;
 import android.content.res.TypedArray;
