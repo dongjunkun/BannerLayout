@@ -5,6 +5,25 @@
 
 <a href="https://raw.githubusercontent.com/dongjunkun/BannerLayout/master/bannerlayoutsimple.apk">DownLoad APK</a>
 
+或者扫描二维码
+
+<img src="https://raw.githubusercontent.com/dongjunkun/BannerLayoutDemo/master/art/1453087757.png"/>
+
+##Gradle Dependency
+```
+allprojects {
+    repositories {
+        ...
+        maven { url "https://jitpack.io" }
+    }
+}
+
+dependencies {
+    compile 'com.github.dongjunkun:BannerLayout:1.0.0'
+}
+
+```
+
 ###使用
 **xml**
 ```
