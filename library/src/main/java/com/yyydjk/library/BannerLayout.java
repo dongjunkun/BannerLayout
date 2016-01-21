@@ -328,22 +328,16 @@ public class BannerLayout extends RelativeLayout {
      * 开始自动轮播
      */
     public void startAutoPlay() {
+        stopAutoPlay(); // 避免重复消息
         if (isAutoPlay) {
             handler.sendEmptyMessageDelayed(WHAT_AUTO_PLAY, autoPlayDuration);
         }
     }
 
     @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        stopAutoPlay();
-    }
-
-    @Override
     protected void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
         if (visibility == VISIBLE) {
-            stopAutoPlay(); // 避免重复消息
             startAutoPlay();
         } else {
             stopAutoPlay();
