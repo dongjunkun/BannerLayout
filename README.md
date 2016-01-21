@@ -5,7 +5,7 @@
 
 <a href="https://raw.githubusercontent.com/dongjunkun/BannerLayout/master/bannerlayoutsimple.apk">DownLoad APK</a>
 
-或者扫描二维码
+或者扫描二维码下载
 
 <img src="https://raw.githubusercontent.com/dongjunkun/BannerLayoutDemo/master/art/1453087757.png"/>
 
@@ -19,7 +19,7 @@ allprojects {
 }
 
 dependencies {
-    compile 'com.github.dongjunkun:BannerLayout:1.0.0'
+    compile 'com.github.dongjunkun:BannerLayout:1.0.1'
 }
 
 ```
