@@ -55,11 +55,13 @@ public class BannerLayout extends RelativeLayout {
     private int unSelectedIndicatorWidth = 6;
 
     private Position indicatorPosition = Position.centerBottom;
-    private int autoPlayDuration = 3000;
-    private int scrollDuration = 1100;
+    private int autoPlayDuration = 4000;
+    private int scrollDuration = 900;
 
     private int indicatorSpace = 3;
     private int indicatorMargin = 10;
+
+    private int defaultImage;
 
     private enum Shape {
         rect, oval
@@ -80,8 +82,10 @@ public class BannerLayout extends RelativeLayout {
         @Override
         public boolean handleMessage(Message msg) {
             if (msg.what == WHAT_AUTO_PLAY) {
-                pager.setCurrentItem(pager.getCurrentItem() + 1, true);
-                handler.sendEmptyMessageDelayed(WHAT_AUTO_PLAY, autoPlayDuration);
+                if (pager != null) {
+                    pager.setCurrentItem(pager.getCurrentItem() + 1, true);
+                    handler.sendEmptyMessageDelayed(WHAT_AUTO_PLAY, autoPlayDuration);
+                }
             }
             return false;
         }
@@ -131,6 +135,7 @@ public class BannerLayout extends RelativeLayout {
         autoPlayDuration = array.getInt(R.styleable.BannerLayoutStyle_autoPlayDuration, autoPlayDuration);
         scrollDuration = array.getInt(R.styleable.BannerLayoutStyle_scrollDuration, scrollDuration);
         isAutoPlay = array.getBoolean(R.styleable.BannerLayoutStyle_isAutoPlay, isAutoPlay);
+        defaultImage = array.getResourceId(R.styleable.BannerLayoutStyle_defaultImage,defaultImage);
         array.recycle();
 
         //绘制未选中状态图形
@@ -240,7 +245,11 @@ public class BannerLayout extends RelativeLayout {
             }
         });
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        Glide.with(getContext()).load(url).centerCrop().into(imageView);
+        if (defaultImage != 0){
+            Glide.with(getContext()).load(url).placeholder(defaultImage).centerCrop().into(imageView);
+        }else {
+            Glide.with(getContext()).load(url).centerCrop().into(imageView);
+        }
         return imageView;
     }
 
@@ -319,7 +328,7 @@ public class BannerLayout extends RelativeLayout {
             FixedSpeedScroller scroller = new FixedSpeedScroller(pager.getContext(), null, duration);
             mScroller.set(pager, scroller);
         } catch (Exception e) {
-
+            e.printStackTrace();
 
         }
     }
