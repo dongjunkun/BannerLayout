@@ -37,6 +37,7 @@ dependencies {
         app:indicatorShape="rect"
         app:indicatorSpace="3dp"
         app:scrollDuration="1100"
+        app:defaultImage="@mipmap/ic_launcher"
         app:selectedIndicatorColor="?attr/colorPrimary"
         app:selectedIndicatorHeight="6dp"
         app:selectedIndicatorWidth="6dp"
