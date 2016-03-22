@@ -39,7 +39,7 @@ public class BannerLayout extends RelativeLayout {
     private Drawable unSelectedDrawable;
     private Drawable selectedDrawable;
 
-    private int WHAT_AUTO_PLAY = 1000;
+    private static final int WHAT_AUTO_PLAY = 1000;
 
     private boolean isAutoPlay = true;
 
@@ -135,7 +135,7 @@ public class BannerLayout extends RelativeLayout {
         autoPlayDuration = array.getInt(R.styleable.BannerLayoutStyle_autoPlayDuration, autoPlayDuration);
         scrollDuration = array.getInt(R.styleable.BannerLayoutStyle_scrollDuration, scrollDuration);
         isAutoPlay = array.getBoolean(R.styleable.BannerLayoutStyle_isAutoPlay, isAutoPlay);
-        defaultImage = array.getResourceId(R.styleable.BannerLayoutStyle_defaultImage,defaultImage);
+        defaultImage = array.getResourceId(R.styleable.BannerLayoutStyle_defaultImage, defaultImage);
         array.recycle();
 
         //绘制未选中状态图形
@@ -245,9 +245,9 @@ public class BannerLayout extends RelativeLayout {
             }
         });
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        if (defaultImage != 0){
+        if (defaultImage != 0) {
             Glide.with(getContext()).load(url).placeholder(defaultImage).centerCrop().into(imageView);
-        }else {
+        } else {
             Glide.with(getContext()).load(url).centerCrop().into(imageView);
         }
         return imageView;
@@ -317,7 +317,10 @@ public class BannerLayout extends RelativeLayout {
                 switchIndicator(position % itemCount);
             }
         });
-        startAutoPlay();
+        // 页数大于1默认开启自动轮播
+        if (isAutoPlay && itemCount > 1) {
+            startAutoPlay();
+        }
 
     }
 
@@ -336,20 +339,20 @@ public class BannerLayout extends RelativeLayout {
     /**
      * 开始自动轮播
      */
-    public void startAutoPlay() {
-        stopAutoPlay(); // 避免重复消息
-        if (isAutoPlay) {
-            handler.sendEmptyMessageDelayed(WHAT_AUTO_PLAY, autoPlayDuration);
-        }
+    private void startAutoPlay() {
+        handler.removeMessages(WHAT_AUTO_PLAY); // 避免重复消息
+        handler.sendEmptyMessageDelayed(WHAT_AUTO_PLAY, autoPlayDuration);
     }
 
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
-        if (visibility == VISIBLE) {
-            startAutoPlay();
-        } else {
-            stopAutoPlay();
+        if (isAutoPlay && itemCount > 1) { // 避免手动停止轮播后，页面跳转回来又开始轮播的情况
+            if (visibility == VISIBLE) {
+                startAutoPlay();
+            } else {
+                stopAutoPlay();
+            }
         }
     }
 
@@ -357,24 +360,38 @@ public class BannerLayout extends RelativeLayout {
     /**
      * 停止自动轮播
      */
-    public void stopAutoPlay() {
-        if (isAutoPlay) {
-            handler.removeMessages(WHAT_AUTO_PLAY);
-        }
+    private void stopAutoPlay() {
+        handler.removeMessages(WHAT_AUTO_PLAY);
     }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                stopAutoPlay();
+                if (isAutoPlay && itemCount > 1) {
+                    stopAutoPlay();
+                }
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
-                startAutoPlay();
+                if (isAutoPlay && itemCount > 1) {
+                    startAutoPlay();
+                }
                 break;
         }
         return super.dispatchTouchEvent(ev);
+    }
+
+    /**
+     * 是否自动轮播
+     */
+    public void setAutoPlay(boolean autoPlay) {
+        isAutoPlay = autoPlay;
+        if (isAutoPlay && itemCount > 1) {
+            startAutoPlay();
+        } else {
+            stopAutoPlay();
+        }
     }
 
     /**
