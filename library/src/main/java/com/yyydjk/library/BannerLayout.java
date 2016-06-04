@@ -136,7 +136,7 @@ public class BannerLayout extends RelativeLayout {
         autoPlayDuration = array.getInt(R.styleable.BannerLayoutStyle_autoPlayDuration, autoPlayDuration);
         scrollDuration = array.getInt(R.styleable.BannerLayoutStyle_scrollDuration, scrollDuration);
         isAutoPlay = array.getBoolean(R.styleable.BannerLayoutStyle_isAutoPlay, isAutoPlay);
-        defaultImage = array.getResourceId(R.styleable.BannerLayoutStyle_defaultImage,defaultImage);
+        defaultImage = array.getResourceId(R.styleable.BannerLayoutStyle_defaultImage, defaultImage);
         array.recycle();
 
         //绘制未选中状态图形
@@ -234,6 +234,17 @@ public class BannerLayout extends RelativeLayout {
         setViews(views);
     }
 
+    /**
+     * 更新Banner
+     *
+     * @param picUrls
+     */
+    public void updateViewUrls(final List<String> picUrls) {
+        oldPosition = -1;
+        removeAllViews();
+        setViewUrls(picUrls);
+    }
+
     @NonNull
     private ImageView getImageView(String url, final int position) {
         ImageView imageView = new ImageView(getContext());
@@ -246,9 +257,9 @@ public class BannerLayout extends RelativeLayout {
             }
         });
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        if (defaultImage != 0){
+        if (defaultImage != 0) {
             Glide.with(getContext()).load(url).placeholder(defaultImage).centerCrop().into(imageView);
-        }else {
+        } else {
             Glide.with(getContext()).load(url).centerCrop().into(imageView);
         }
         return imageView;
