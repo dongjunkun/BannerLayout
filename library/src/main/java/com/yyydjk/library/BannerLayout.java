@@ -62,6 +62,7 @@ public class BannerLayout extends RelativeLayout {
     private int indicatorMargin = 10;
 
     private int defaultImage;
+    private int oldPosition = -1;
 
     private enum Shape {
         rect, oval
@@ -383,9 +384,14 @@ public class BannerLayout extends RelativeLayout {
      * @param currentPosition 当前位置
      */
     private void switchIndicator(int currentPosition) {
-        for (int i = 0; i < indicatorContainer.getChildCount(); i++) {
-            ((ImageView) indicatorContainer.getChildAt(i)).setImageDrawable(i == currentPosition ? selectedDrawable : unSelectedDrawable);
+        if (oldPosition != -1) {
+            ((ImageView) indicatorContainer.getChildAt(oldPosition)).setImageDrawable(unSelectedDrawable);
         }
+        ((ImageView) indicatorContainer.getChildAt(currentPosition)).setImageDrawable(selectedDrawable);
+        oldPosition = currentPosition;
+//        for (int i = 0; i < indicatorContainer.getChildCount(); i++) {
+//            ((ImageView) indicatorContainer.getChildAt(i)).setImageDrawable(i == currentPosition ? selectedDrawable : unSelectedDrawable);
+//        }
     }
 
 
