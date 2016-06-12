@@ -234,17 +234,6 @@ public class BannerLayout extends RelativeLayout {
         setViews(views);
     }
 
-    /**
-     * 更新Banner
-     *
-     * @param picUrls
-     */
-    public void updateViewUrls(final List<String> picUrls) {
-        oldPosition = -1;
-        removeAllViews();
-        setViewUrls(picUrls);
-    }
-
     @NonNull
     private ImageView getImageView(String url, final int position) {
         ImageView imageView = new ImageView(getContext());
