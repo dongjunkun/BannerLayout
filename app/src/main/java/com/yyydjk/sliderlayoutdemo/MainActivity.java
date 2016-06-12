@@ -9,7 +9,7 @@ import com.yyydjk.library.BannerLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +25,13 @@ public class MainActivity extends AppCompatActivity{
         urls.add("http://img0.imgtn.bdimg.com/it/u=1095909580,3513610062&fm=23&gp=0.jpg");
         urls.add("http://img4.imgtn.bdimg.com/it/u=1030604573,1579640549&fm=23&gp=0.jpg");
         urls.add("http://img5.imgtn.bdimg.com/it/u=2583054979,2860372508&fm=23&gp=0.jpg");
-        bannerLayout.setViewUrls(urls);
+        final List<String> titles = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            titles.add("title " + i);
+        }
+        /* Note: do not specify indicatorMargin attribute in layout
+        xml to set titles. */
+        bannerLayout.setViewUrls(urls, titles);
 
         //添加监听事件
         bannerLayout.setOnBannerItemClickListener(new BannerLayout.OnBannerItemClickListener() {
