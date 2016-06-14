@@ -1,16 +1,20 @@
 package com.yyydjk.library;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Scroller;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
@@ -32,10 +37,11 @@ import java.util.List;
  */
 public class BannerLayout extends RelativeLayout {
 
+    private TextView mTitle;
     private ViewPager pager;
+
     //指示器容器
     private LinearLayout indicatorContainer;
-
     private Drawable unSelectedDrawable;
     private Drawable selectedDrawable;
 
@@ -59,9 +65,10 @@ public class BannerLayout extends RelativeLayout {
     private int scrollDuration = 900;
 
     private int indicatorSpace = 3;
-    private int indicatorMargin = 10;
+    private int indicatorMargin = 0;
 
     private int defaultImage;
+    private int oldPosition = -1;
 
     private enum Shape {
         rect, oval
@@ -75,6 +82,10 @@ public class BannerLayout extends RelativeLayout {
         rightTop,
         leftTop
     }
+
+    private int titleTextSize = 16;
+    private int titleTextColor = 0xffffffff;
+    private int titleMaxLines = 2;
 
     private OnBannerItemClickListener onBannerItemClickListener;
 
@@ -135,7 +146,10 @@ public class BannerLayout extends RelativeLayout {
         autoPlayDuration = array.getInt(R.styleable.BannerLayoutStyle_autoPlayDuration, autoPlayDuration);
         scrollDuration = array.getInt(R.styleable.BannerLayoutStyle_scrollDuration, scrollDuration);
         isAutoPlay = array.getBoolean(R.styleable.BannerLayoutStyle_isAutoPlay, isAutoPlay);
-        defaultImage = array.getResourceId(R.styleable.BannerLayoutStyle_defaultImage,defaultImage);
+        defaultImage = array.getResourceId(R.styleable.BannerLayoutStyle_defaultImage, defaultImage);
+        titleTextSize = array.getDimensionPixelSize(R.styleable.BannerLayoutStyle_titleTextSize, titleTextSize);
+        titleMaxLines = array.getInt(R.styleable.BannerLayoutStyle_titleMaxLines, titleMaxLines);
+        titleTextColor = array.getColor(R.styleable.BannerLayoutStyle_titleColor, titleTextColor);
         array.recycle();
 
         //绘制未选中状态图形
@@ -233,6 +247,46 @@ public class BannerLayout extends RelativeLayout {
         setViews(views);
     }
 
+    /**
+     * add online image urls and corresponding titles.
+     * Note: do not specify indicatorMargin attribute in layout
+     * xml to set titles.
+     *
+     * @param urls
+     * @param titles
+     */
+    public void setViewUrls(List<String> urls, List<String> titles) {
+        List<View> views = new ArrayList<>();
+        List<String> titlesCopy = new ArrayList<>();
+        itemCount = urls.size();
+        //主要是解决当item为小于3个的时候滑动有问题，这里将其拼凑成3个以上
+        if (itemCount < 1) {//当item个数0
+            throw new IllegalStateException("item count not equal zero");
+        } else if (itemCount < 2) { //当item个数为1
+            views.add(getImageView(urls.get(0), 0));
+            views.add(getImageView(urls.get(0), 0));
+            views.add(getImageView(urls.get(0), 0));
+            titlesCopy.add(titles.get(0));
+            titlesCopy.add(titles.get(0));
+            titlesCopy.add(titles.get(0));
+        } else if (itemCount < 3) {//当item个数为2
+            views.add(getImageView(urls.get(0), 0));
+            views.add(getImageView(urls.get(1), 1));
+            views.add(getImageView(urls.get(0), 0));
+            views.add(getImageView(urls.get(1), 1));
+            titlesCopy.add(titles.get(0));
+            titlesCopy.add(titles.get(1));
+            titlesCopy.add(titles.get(0));
+            titlesCopy.add(titles.get(1));
+        } else {
+            for (int i = 0; i < urls.size(); i++) {
+                views.add(getImageView(urls.get(i), i));
+                titlesCopy.add(titles.get(i));
+            }
+        }
+        setViews(views, titlesCopy);
+    }
+
     @NonNull
     private ImageView getImageView(String url, final int position) {
         ImageView imageView = new ImageView(getContext());
@@ -245,12 +299,102 @@ public class BannerLayout extends RelativeLayout {
             }
         });
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        if (defaultImage != 0){
+        if (defaultImage != 0) {
             Glide.with(getContext()).load(url).placeholder(defaultImage).centerCrop().into(imageView);
-        }else {
+        } else {
             Glide.with(getContext()).load(url).centerCrop().into(imageView);
         }
         return imageView;
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private void setViews(List<View> views, final List<String> titles) {
+        //初始化pager
+        pager = new ViewPager(getContext());
+        //添加viewpager到SliderLayout
+        addView(pager);
+        setSliderTransformDuration(scrollDuration);
+        //初始化indicatorContainer
+        indicatorContainer = new LinearLayout(getContext());
+        indicatorContainer.setId(View.generateViewId());
+        indicatorContainer.setGravity(Gravity.CENTER_VERTICAL);
+        indicatorContainer.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.transparent));
+        indicatorContainer.setPadding(0, 6, 0, 10);
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+
+        switch (indicatorPosition) {
+            case centerBottom:
+                indicatorContainer.setGravity(Gravity.CENTER_HORIZONTAL);
+                params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                break;
+            case centerTop:
+                indicatorContainer.setGravity(Gravity.CENTER_HORIZONTAL);
+                params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                break;
+            case leftBottom:
+                indicatorContainer.setGravity(Gravity.START);
+                params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                break;
+            case leftTop:
+                indicatorContainer.setGravity(Gravity.START);
+                params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                break;
+            case rightBottom:
+                indicatorContainer.setGravity(Gravity.END);
+                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                break;
+            case rightTop:
+                indicatorContainer.setGravity(Gravity.END);
+                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                break;
+        }
+        //设置margin
+        params.setMargins(indicatorMargin, indicatorMargin, indicatorMargin, indicatorMargin);
+        //添加指示器容器布局到SliderLayout
+        addView(indicatorContainer, params);
+        //初始化指示器，并添加到指示器容器布局
+        for (int i = 0; i < itemCount; i++) {
+            ImageView indicator = new ImageView(getContext());
+            indicator.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            indicator.setPadding(indicatorSpace, indicatorSpace, indicatorSpace, indicatorSpace);
+            indicator.setImageDrawable(unSelectedDrawable);
+            indicator.setTag(i);
+            indicatorContainer.addView(indicator);
+        }
+        // add titles
+        mTitle = new TextView(getContext());
+        mTitle.setText(titles.get(0));
+        mTitle.setMaxLines(titleMaxLines);
+        mTitle.setPadding(20, 0, 20, 0);
+        mTitle.setGravity(Gravity.CENTER_HORIZONTAL);
+        mTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, titleTextSize);
+        mTitle.setTextColor(titleTextColor);
+        mTitle.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.transparent));
+        LayoutParams titleParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        titleParams.addRule(RelativeLayout.ABOVE, indicatorContainer.getId());
+        addView(mTitle, titleParams);
+
+        LoopPagerAdapter pagerAdapter = new LoopPagerAdapter(views);
+        pager.setAdapter(pagerAdapter);
+        //设置当前item到Integer.MAX_VALUE中间的一个值，看起来像无论是往前滑还是往后滑都是ok的
+        //如果不设置，用户往左边滑动的时候已经划不动了
+        int targetItemPosition = Integer.MAX_VALUE / 2 - Integer.MAX_VALUE / 2 % itemCount;
+        pager.setCurrentItem(targetItemPosition);
+        switchIndicator(targetItemPosition % itemCount);
+        pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                switchIndicator(position % itemCount);
+                mTitle.setText(titles.get(position % itemCount));
+            }
+        });
+        startAutoPlay();
     }
 
     //添加任意View视图
@@ -383,9 +527,14 @@ public class BannerLayout extends RelativeLayout {
      * @param currentPosition 当前位置
      */
     private void switchIndicator(int currentPosition) {
-        for (int i = 0; i < indicatorContainer.getChildCount(); i++) {
-            ((ImageView) indicatorContainer.getChildAt(i)).setImageDrawable(i == currentPosition ? selectedDrawable : unSelectedDrawable);
+        if (oldPosition != -1) {
+            ((ImageView) indicatorContainer.getChildAt(oldPosition)).setImageDrawable(unSelectedDrawable);
         }
+        ((ImageView) indicatorContainer.getChildAt(currentPosition)).setImageDrawable(selectedDrawable);
+        oldPosition = currentPosition;
+//        for (int i = 0; i < indicatorContainer.getChildCount(); i++) {
+//            ((ImageView) indicatorContainer.getChildAt(i)).setImageDrawable(i == currentPosition ? selectedDrawable : unSelectedDrawable);
+//        }
     }
 
 
