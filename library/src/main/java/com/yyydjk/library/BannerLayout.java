@@ -10,9 +10,11 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -81,6 +83,10 @@ public class BannerLayout extends RelativeLayout {
         leftTop
     }
 
+    private int titleTextSize = 16;
+    private int titleTextColor = 0xffffffff;
+    private int titleMaxLines = 2;
+
     private OnBannerItemClickListener onBannerItemClickListener;
 
     private Handler handler = new Handler(new Handler.Callback() {
@@ -141,6 +147,9 @@ public class BannerLayout extends RelativeLayout {
         scrollDuration = array.getInt(R.styleable.BannerLayoutStyle_scrollDuration, scrollDuration);
         isAutoPlay = array.getBoolean(R.styleable.BannerLayoutStyle_isAutoPlay, isAutoPlay);
         defaultImage = array.getResourceId(R.styleable.BannerLayoutStyle_defaultImage, defaultImage);
+        titleTextSize = array.getDimensionPixelSize(R.styleable.BannerLayoutStyle_titleTextSize, titleTextSize);
+        titleMaxLines = array.getInt(R.styleable.BannerLayoutStyle_titleMaxLines, titleMaxLines);
+        titleTextColor = array.getColor(R.styleable.BannerLayoutStyle_titleColor, titleTextColor);
         array.recycle();
 
         //绘制未选中状态图形
@@ -309,7 +318,7 @@ public class BannerLayout extends RelativeLayout {
         indicatorContainer = new LinearLayout(getContext());
         indicatorContainer.setId(View.generateViewId());
         indicatorContainer.setGravity(Gravity.CENTER_VERTICAL);
-        indicatorContainer.setBackgroundColor(getResources().getColor(R.color.transparent));
+        indicatorContainer.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.transparent));
         indicatorContainer.setPadding(0, 6, 0, 10);
         LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
@@ -361,12 +370,12 @@ public class BannerLayout extends RelativeLayout {
         // add titles
         mTitle = new TextView(getContext());
         mTitle.setText(titles.get(0));
-        mTitle.setMaxLines(2);
+        mTitle.setMaxLines(titleMaxLines);
         mTitle.setPadding(20, 0, 20, 0);
         mTitle.setGravity(Gravity.CENTER_HORIZONTAL);
-        mTitle.setTextSize(16);
-        mTitle.setTextColor(getResources().getColor(android.R.color.white));
-        mTitle.setBackgroundColor(getResources().getColor(R.color.transparent));
+        mTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, titleTextSize);
+        mTitle.setTextColor(titleTextColor);
+        mTitle.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.transparent));
         LayoutParams titleParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         titleParams.addRule(RelativeLayout.ABOVE, indicatorContainer.getId());
         addView(mTitle, titleParams);
