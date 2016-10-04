@@ -92,13 +92,11 @@ public class BannerLayout extends RelativeLayout {
     });
 
     public BannerLayout(Context context) {
-        super(context);
-        init(null, 0);
+        this(context,null);
     }
 
     public BannerLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(attrs, 0);
+        this(context, attrs,0);
     }
 
     public BannerLayout(Context context, AttributeSet attrs, int defStyleAttr) {
