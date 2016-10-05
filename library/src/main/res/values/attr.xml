@@ -27,7 +27,7 @@
         <attr name="indicatorMargin" format="dimension|reference" />
         <attr name="autoPlayDuration" format="integer|reference" />
         <attr name="scrollDuration" format="integer|reference" />
-        <attr name="isAutoPlay" format="boolean"/>
+        <attr name="isAutoPlay" format="boolean|reference"/>
         <attr name="defaultImage" format="integer|reference"/>
     </declare-styleable>
 </resources>

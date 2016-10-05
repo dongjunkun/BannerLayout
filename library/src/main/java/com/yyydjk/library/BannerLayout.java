@@ -7,6 +7,8 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -63,6 +65,8 @@ public class BannerLayout extends RelativeLayout {
 
     private int defaultImage;
 
+    private int currentPosition;
+
     private enum Shape {
         rect, oval
     }
@@ -82,7 +86,7 @@ public class BannerLayout extends RelativeLayout {
         @Override
         public boolean handleMessage(Message msg) {
             if (msg.what == WHAT_AUTO_PLAY) {
-                if (pager != null) {
+                if (pager != null && isAutoPlay) {
                     pager.setCurrentItem(pager.getCurrentItem() + 1, true);
                     handler.sendEmptyMessageDelayed(WHAT_AUTO_PLAY, autoPlayDuration);
                 }
@@ -252,7 +256,7 @@ public class BannerLayout extends RelativeLayout {
     }
 
     //添加任意View视图
-    private void setViews(final List<View> views) {
+    public void setViews(final List<View> views) {
         //初始化pager
         pager = new ViewPager(getContext());
         //添加viewpager到SliderLayout
@@ -307,15 +311,19 @@ public class BannerLayout extends RelativeLayout {
         //设置当前item到Integer.MAX_VALUE中间的一个值，看起来像无论是往前滑还是往后滑都是ok的
         //如果不设置，用户往左边滑动的时候已经划不动了
         int targetItemPosition = Integer.MAX_VALUE / 2 - Integer.MAX_VALUE / 2 % itemCount;
+        currentPosition = targetItemPosition;
         pager.setCurrentItem(targetItemPosition);
         switchIndicator(targetItemPosition % itemCount);
         pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
+                currentPosition = position;
                 switchIndicator(position % itemCount);
             }
         });
-        startAutoPlay();
+        if (isAutoPlay) {
+            startAutoPlay();
+        }
 
     }
 
@@ -334,7 +342,7 @@ public class BannerLayout extends RelativeLayout {
     /**
      * 开始自动轮播
      */
-    public void startAutoPlay() {
+    private void startAutoPlay() {
         stopAutoPlay(); // 避免重复消息
         if (isAutoPlay) {
             handler.sendEmptyMessageDelayed(WHAT_AUTO_PLAY, autoPlayDuration);
@@ -355,11 +363,20 @@ public class BannerLayout extends RelativeLayout {
     /**
      * 停止自动轮播
      */
-    public void stopAutoPlay() {
+    private void stopAutoPlay() {
         if (isAutoPlay) {
             handler.removeMessages(WHAT_AUTO_PLAY);
         }
     }
+
+    /**
+     *
+     * @param autoPlay 是否自动轮播
+     */
+    public void setAutoPlay(boolean autoPlay) {
+        isAutoPlay = autoPlay;
+    }
+
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
@@ -394,6 +411,54 @@ public class BannerLayout extends RelativeLayout {
     public interface OnBannerItemClickListener {
         void onItemClick(int position);
     }
+
+    @Override
+    public void onRestoreInstanceState(Parcelable state) {
+        SavedState savedState = (SavedState) state;
+        super.onRestoreInstanceState(savedState.getSuperState());
+        currentPosition = savedState.currentPosition;
+        requestLayout();
+    }
+
+    @Override
+    public Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+        SavedState savedState = new SavedState(superState);
+        savedState.currentPosition = currentPosition;
+        return savedState;
+    }
+
+    static class SavedState extends BaseSavedState {
+        int currentPosition;
+
+        public SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        private SavedState(Parcel in) {
+            super(in);
+            currentPosition = in.readInt();
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            super.writeToParcel(dest, flags);
+            dest.writeInt(currentPosition);
+        }
+
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+            @Override
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            @Override
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
+    }
+
 
     public class LoopPagerAdapter extends PagerAdapter {
         private List<View> views;

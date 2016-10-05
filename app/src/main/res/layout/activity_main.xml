@@ -17,6 +17,7 @@
         app:indicatorShape="rect"
         app:indicatorSpace="3dp"
         app:scrollDuration="900"
+        app:isAutoPlay="true"
         app:defaultImage="@mipmap/ic_launcher"
         app:selectedIndicatorColor="?attr/colorPrimary"
         app:selectedIndicatorHeight="6dp"
