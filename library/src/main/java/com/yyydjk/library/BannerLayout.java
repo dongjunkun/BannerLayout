@@ -23,8 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Scroller;
 
-import com.bumptech.glide.Glide;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +62,16 @@ public class BannerLayout extends RelativeLayout {
     private int indicatorMargin = 10;
 
     private int defaultImage;
+
+    public ImageSetListener getListener() {
+        return listener;
+    }
+
+    public void setListener(ImageSetListener listener) {
+        this.listener = listener;
+    }
+
+    private ImageSetListener listener;
 
     private int currentPosition;
 
@@ -207,7 +215,8 @@ public class BannerLayout extends RelativeLayout {
             }
         });
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        Glide.with(getContext()).load(res).centerCrop().into(imageView);
+        listener.setImage(res, imageView, defaultImage);
+//        Glide.with(getContext()).load(res).centerCrop().into(imageView);
         return imageView;
     }
 
@@ -247,11 +256,12 @@ public class BannerLayout extends RelativeLayout {
             }
         });
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        if (defaultImage != 0){
-            Glide.with(getContext()).load(url).placeholder(defaultImage).centerCrop().into(imageView);
-        }else {
-            Glide.with(getContext()).load(url).centerCrop().into(imageView);
-        }
+        listener.setImage(url, imageView, defaultImage);
+//        if (defaultImage != 0){
+//            Glide.with(getContext()).load(url).placeholder(defaultImage).centerCrop().into(imageView);
+//        }else {
+//            Glide.with(getContext()).load(url).centerCrop().into(imageView);
+//        }
         return imageView;
     }
 
@@ -525,6 +535,10 @@ public class BannerLayout extends RelativeLayout {
             // Ignore received duration, use fixed one instead
             super.startScroll(startX, startY, dx, dy, mDuration);
         }
+    }
+
+    public interface ImageSetListener{
+        void setImage(Object res, ImageView imageView , int defaultImage);
     }
 }
 
