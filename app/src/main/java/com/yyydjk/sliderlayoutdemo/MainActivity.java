@@ -2,14 +2,16 @@ package com.yyydjk.sliderlayoutdemo;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.yyydjk.library.BannerLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,6 +20,27 @@ public class MainActivity extends AppCompatActivity{
 
         BannerLayout bannerLayout = (BannerLayout) findViewById(R.id.banner);
         BannerLayout bannerLayout2 = (BannerLayout) findViewById(R.id.banner2);
+        //setListener必须在setViewUrls之前
+        bannerLayout.setListener(new BannerLayout.ImageSetListener() {
+            @Override
+            public void setImage(Object res, ImageView imageView, int defaultImage) {
+                if (defaultImage != 0) {
+                    Glide.with(MainActivity.this).load(res).placeholder(defaultImage).centerCrop().into(imageView);
+                } else {
+                    Glide.with(MainActivity.this).load(res).centerCrop().into(imageView);
+                }
+            }
+        });
+        bannerLayout2.setListener(new BannerLayout.ImageSetListener() {
+            @Override
+            public void setImage(Object res, ImageView imageView, int defaultImage) {
+                if (defaultImage != 0) {
+                    Glide.with(MainActivity.this).load(res).placeholder(defaultImage).centerCrop().into(imageView);
+                } else {
+                    Glide.with(MainActivity.this).load(res).centerCrop().into(imageView);
+                }
+            }
+        });
 
         final List<String> urls = new ArrayList<>();
         urls.add("http://img3.imgtn.bdimg.com/it/u=2674591031,2960331950&fm=23&gp=0.jpg");
