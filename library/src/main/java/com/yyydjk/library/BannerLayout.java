@@ -23,11 +23,11 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Scroller;
 
-import com.bumptech.glide.Glide;
-
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * Created by dongjunkun on 2015/8/9.
@@ -63,9 +63,9 @@ public class BannerLayout extends RelativeLayout {
     private int indicatorSpace = 3;
     private int indicatorMargin = 10;
 
-    private int defaultImage;
-
     private int currentPosition;
+
+    private ImageLoader imageLoader;
 
     private enum Shape {
         rect, oval
@@ -96,11 +96,11 @@ public class BannerLayout extends RelativeLayout {
     });
 
     public BannerLayout(Context context) {
-        this(context,null);
+        this(context, null);
     }
 
     public BannerLayout(Context context, AttributeSet attrs) {
-        this(context, attrs,0);
+        this(context, attrs, 0);
     }
 
     public BannerLayout(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -137,7 +137,6 @@ public class BannerLayout extends RelativeLayout {
         autoPlayDuration = array.getInt(R.styleable.BannerLayoutStyle_autoPlayDuration, autoPlayDuration);
         scrollDuration = array.getInt(R.styleable.BannerLayoutStyle_scrollDuration, scrollDuration);
         isAutoPlay = array.getBoolean(R.styleable.BannerLayoutStyle_isAutoPlay, isAutoPlay);
-        defaultImage = array.getResourceId(R.styleable.BannerLayoutStyle_defaultImage,defaultImage);
         array.recycle();
 
         //绘制未选中状态图形
@@ -171,45 +170,6 @@ public class BannerLayout extends RelativeLayout {
 
     }
 
-    //添加本地图片路径
-    public void setViewRes(List<Integer> viewRes) {
-        List<View> views = new ArrayList<>();
-        itemCount = viewRes.size();
-        //主要是解决当item为小于3个的时候滑动有问题，这里将其拼凑成3个以上
-        if (itemCount < 1) {//当item个数0
-            throw new IllegalStateException("item count not equal zero");
-        } else if (itemCount < 2) {//当item个数为1
-            views.add(getImageView(viewRes.get(0), 0));
-            views.add(getImageView(viewRes.get(0), 0));
-            views.add(getImageView(viewRes.get(0), 0));
-        } else if (itemCount < 3) {//当item个数为2
-            views.add(getImageView(viewRes.get(0), 0));
-            views.add(getImageView(viewRes.get(1), 1));
-            views.add(getImageView(viewRes.get(0), 0));
-            views.add(getImageView(viewRes.get(1), 1));
-        } else {
-            for (int i = 0; i < viewRes.size(); i++) {
-                views.add(getImageView(viewRes.get(i), i));
-            }
-        }
-        setViews(views);
-    }
-
-    @NonNull
-    private ImageView getImageView(Integer res, final int position) {
-        ImageView imageView = new ImageView(getContext());
-        imageView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (onBannerItemClickListener != null) {
-                    onBannerItemClickListener.onItemClick(position);
-                }
-            }
-        });
-        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        Glide.with(getContext()).load(res).centerCrop().into(imageView);
-        return imageView;
-    }
 
     //添加网络图片路径
     public void setViewUrls(List<String> urls) {
@@ -247,12 +207,20 @@ public class BannerLayout extends RelativeLayout {
             }
         });
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        if (defaultImage != 0){
-            Glide.with(getContext()).load(url).placeholder(defaultImage).centerCrop().into(imageView);
-        }else {
-            Glide.with(getContext()).load(url).centerCrop().into(imageView);
-        }
+        imageLoader.displayImage(getContext(),url,imageView);
         return imageView;
+    }
+
+
+    public void setImageLoader(ImageLoader imageLoader) {
+        this.imageLoader = imageLoader;
+    }
+
+    public ViewPager getPager() {
+        if (pager != null) {
+            return pager;
+        }
+        return null;
     }
 
     //添加任意View视图
@@ -370,7 +338,6 @@ public class BannerLayout extends RelativeLayout {
     }
 
     /**
-     *
      * @param autoPlay 是否自动轮播
      */
     public void setAutoPlay(boolean autoPlay) {
@@ -428,10 +395,10 @@ public class BannerLayout extends RelativeLayout {
         return savedState;
     }
 
-    static class SavedState extends BaseSavedState {
+    private static class SavedState extends BaseSavedState {
         int currentPosition;
 
-        public SavedState(Parcelable superState) {
+        SavedState(Parcelable superState) {
             super(superState);
         }
 
@@ -460,10 +427,10 @@ public class BannerLayout extends RelativeLayout {
     }
 
 
-    public class LoopPagerAdapter extends PagerAdapter {
+    private class LoopPagerAdapter extends PagerAdapter {
         private List<View> views;
 
-        public LoopPagerAdapter(List<View> views) {
+        LoopPagerAdapter(List<View> views) {
             this.views = views;
         }
 
@@ -525,6 +492,10 @@ public class BannerLayout extends RelativeLayout {
             // Ignore received duration, use fixed one instead
             super.startScroll(startX, startY, dx, dy, mDuration);
         }
+    }
+
+    public  interface ImageLoader extends Serializable {
+        void displayImage(Context context, String path, ImageView imageView);
     }
 }
 
