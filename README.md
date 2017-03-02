@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/dongjunkun/BannerLayout.svg)](https://jitpack.io/#dongjunkun/BannerLayout)
+
 一款简洁实用的android广告栏，参考了[AndroidImageSlider](https://github.com/daimajia/AndroidImageSlider)和[BGABanner-Android](https://github.com/bingoogolapple/BGABanner-Android)结合自己的理解而成
 
 ###预览
@@ -19,7 +21,7 @@ allprojects {
 }
 
 dependencies {
-     compile 'com.github.dongjunkun:BannerLayout:1.0.4'
+     compile 'com.github.dongjunkun:BannerLayout:1.0.5'
 }
 
 ```
