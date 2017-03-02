@@ -207,7 +207,7 @@ public class BannerLayout extends RelativeLayout {
             }
         });
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        imageLoader.displayImage(getContext(),url,imageView);
+        imageLoader.displayImage(getContext(), url, imageView);
         return imageView;
     }
 
@@ -320,6 +320,7 @@ public class BannerLayout extends RelativeLayout {
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
+
         if (visibility == VISIBLE) {
             startAutoPlay();
         } else {
@@ -334,6 +335,7 @@ public class BannerLayout extends RelativeLayout {
     private void stopAutoPlay() {
         if (isAutoPlay) {
             handler.removeMessages(WHAT_AUTO_PLAY);
+            pager.setCurrentItem(pager.getCurrentItem(), false);
         }
     }
 
@@ -494,7 +496,7 @@ public class BannerLayout extends RelativeLayout {
         }
     }
 
-    public  interface ImageLoader extends Serializable {
+    public interface ImageLoader extends Serializable {
         void displayImage(Context context, String path, ImageView imageView);
     }
 }

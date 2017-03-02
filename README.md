@@ -50,6 +50,9 @@ dependencies {
 //网络地址
 bannerLayout.setViewUrls(urls);
 
+//设置加载器
+bannerLayout.setImageLoader(new GlideImageLoader());
+
 //本地资源
 bannerLayout.setViewRes(viewRes);
 
