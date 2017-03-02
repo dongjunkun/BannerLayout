@@ -335,7 +335,9 @@ public class BannerLayout extends RelativeLayout {
     private void stopAutoPlay() {
         if (isAutoPlay) {
             handler.removeMessages(WHAT_AUTO_PLAY);
-            pager.setCurrentItem(pager.getCurrentItem(), false);
+            if (pager != null) {
+                pager.setCurrentItem(pager.getCurrentItem(), false);
+            }
         }
     }
 
