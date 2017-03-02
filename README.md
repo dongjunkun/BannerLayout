@@ -21,7 +21,7 @@ allprojects {
 }
 
 dependencies {
-     compile 'com.github.dongjunkun:BannerLayout:1.0.5'
+     compile 'com.github.dongjunkun:BannerLayout:1.0.6'
 }
 
 ```
