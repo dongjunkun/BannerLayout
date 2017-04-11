@@ -80,6 +80,18 @@ public class BannerLayout extends RelativeLayout {
         leftTop
     }
 
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        startAutoPlay();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        stopAutoPlay();
+    }
+
     private OnBannerItemClickListener onBannerItemClickListener;
 
     private Handler handler = new Handler(new Handler.Callback() {
@@ -333,6 +345,9 @@ public class BannerLayout extends RelativeLayout {
      * 停止自动轮播
      */
     private void stopAutoPlay() {
+        if (pager != null) {
+            pager.setCurrentItem(pager.getCurrentItem(), false);
+        }
         if (isAutoPlay) {
             handler.removeMessages(WHAT_AUTO_PLAY);
             if (pager != null) {

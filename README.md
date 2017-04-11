@@ -2,7 +2,7 @@
 
 一款简洁实用的android广告栏，参考了[AndroidImageSlider](https://github.com/daimajia/AndroidImageSlider)和[BGABanner-Android](https://github.com/bingoogolapple/BGABanner-Android)结合自己的理解而成
 
-###预览
+### 预览
 <img src="https://raw.githubusercontent.com/dongjunkun/BannerLayoutDemo/master/art/bannerLayoutDemo1.gif"/>
 
 <a href="https://raw.githubusercontent.com/dongjunkun/BannerLayout/master/bannerlayoutsimple.apk">DownLoad APK</a>
@@ -11,7 +11,7 @@
 
 <img src="https://raw.githubusercontent.com/dongjunkun/BannerLayoutDemo/master/art/1453087757.png"/>
 
-##Gradle Dependency
+## Gradle Dependency
 ```
 allprojects {
     repositories {
@@ -26,7 +26,7 @@ dependencies {
 
 ```
 
-###使用
+### 使用
 **xml**
 ```
 <com.yyydjk.library.BannerLayout
@@ -67,5 +67,5 @@ bannerLayout.setOnBannerItemClickListener(new BannerLayout.OnBannerItemClickList
         });
 ```
 
-###关于我
+### 关于我
 简书：[dongjunkun](http://www.jianshu.com/users/f07458c1a8f3/latest_articles)
