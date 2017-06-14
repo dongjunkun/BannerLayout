@@ -55,8 +55,6 @@ bannerLayout.setViewUrls(urls);
 //设置加载器
 bannerLayout.setImageLoader(new GlideImageLoader());
 
-//本地资源
-bannerLayout.setViewRes(viewRes);
 
 //添加点击监听
 bannerLayout.setOnBannerItemClickListener(new BannerLayout.OnBannerItemClickListener() {
